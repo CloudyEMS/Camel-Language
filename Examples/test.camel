@@ -1,0 +1,3 @@
+def a;
+read_r a;
+print a;

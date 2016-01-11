@@ -1,0 +1,9 @@
+print "This program will print the even numbers between 1 and 100";
+
+def i = 0;
+while (i <= 100) {
+  if(i mod 2 == 0){
+    print i;
+  }
+  i = i + 1;
+}

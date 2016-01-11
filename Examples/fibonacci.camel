@@ -1,0 +1,19 @@
+def a = 0, b = 1;
+def i;
+
+print "Please enter n to print the first n terms of the fibonacci series";
+read_i i;
+
+print a;
+print b;
+
+loop i : {
+  b = b + a;
+  a = b - a;
+  print b;
+}
+
+a = 2.1;
+print a;
+a = "yes";
+print a * 5;
