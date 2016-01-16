@@ -1,0 +1,7 @@
+def Hi ()
+  print "Hello World!";
+
+def lol ()
+  5 + 5;
+
+print "lol";

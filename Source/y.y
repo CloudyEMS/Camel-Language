@@ -38,7 +38,7 @@
 %nonassoc UMINUS
 %right '^'
 
-%type <nPtr> stmt expr stmt_list id_list declare read_stmt
+%type <nPtr> stmt expr stmt_list id_list declare_id read_stmt
 %%
 
 program:
@@ -47,12 +47,13 @@ program:
 
 function:
   function stmt { ex($2); freeNode($2); }
+  | function DEF ID '(' ')' stmt { putsym($3, sym_func, $6); }
   |
   ;
 
 stmt:
   ';'                               { $$ = opr(';', 2 , NULL, NULL); }
-  | declare ';'                     { $$ = $1; }
+  | declare_id ';'                  { $$ = $1; }
   | expr ';'                        { $$ = $1; }
   | PRINT expr ';'                  { $$ = opr(PRINT, 1, $2); }
   | read_stmt ';'                   { $$ = $1; }
@@ -70,15 +71,15 @@ stmt_list:
   | stmt_list stmt  { $$ = opr(';', 2, $1, $2); }
   ;
 
-declare:
+declare_id:
   DEF id_list {$$ = $2;}
   ;
 
 id_list:
-  ID                        { if(putsym($1)) $$ = id($1); else yyerror("Symbol already defined!"); }
-  | ID '=' expr             { if(putsym($1)) $$ = opr('=', 2, id($1), $3); else yyerror("Symbol already defined!"); }
-  | id_list ',' ID          { if(putsym($3)) $$ = opr(';', 2, $1, id($3)); else yyerror("Symbol already defined!"); }
-  | id_list ',' ID '=' expr { if(putsym($3)) $$ = opr(';', 2, $1, opr('=', 2, id($3), $5)); else yyerror("Symbol already defined!"); }
+  ID                        { if(putsym($1, sym_id, NULL)) $$ = id($1); else yyerror("Symbol already defined!"); }
+  | ID '=' expr             { if(putsym($1, sym_id, NULL)) $$ = opr('=', 2, id($1), $3); else yyerror("Symbol already defined!"); }
+  | id_list ',' ID          { if(putsym($3, sym_id, NULL)) $$ = opr(';', 2, $1, id($3)); else yyerror("Symbol already defined!"); }
+  | id_list ',' ID '=' expr { if(putsym($3, sym_id, NULL)) $$ = opr(';', 2, $1, opr('=', 2, id($3), $5)); else yyerror("Symbol already defined!"); }
   ;
 
 read_stmt:
@@ -89,9 +90,10 @@ read_stmt:
 
 expr:
   INT                     { $$ = conint($1); }
-  | ID                    { $$ = id($1); }
   | STR                   { $$ = constr($1); }
   | REAL                  { $$ = conreal($1); }
+  | ID                    { $$ = id($1); }
+  | ID '(' ')'            { $$ = func($1); }
   | '-' expr %prec UMINUS { $$ = opr(UMINUS, 1, $2);  }
   | expr '+' expr         { $$ = opr('+', 2, $1, $3); }
   | expr '-' expr         { $$ = opr('-', 2, $1, $3); }

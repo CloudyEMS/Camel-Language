@@ -8,7 +8,7 @@
 #include "sym_table.h"
 
 // Enum, holding the types of all nodes for the AST.
-typedef enum { typeCon, typeId, typeOpr } nodeEnum;
+typedef enum { typeCon, typeId, typeFunc, typeOpr } nodeEnum;
 
 // Constant node.
 typedef struct {
@@ -19,6 +19,11 @@ typedef struct {
 typedef struct {
   char *name; // The name of the variable.
 } idNodeType;
+
+// Function node.
+typedef struct {
+  char *name; // The name of the function.
+} funcNodeType;
 
 // Operations nodes.
 typedef struct {
@@ -34,6 +39,7 @@ typedef struct nodeTypeTag{
   union {
     conNodeType con;
     idNodeType id;
+    funcNodeType func;
     oprNodeType opr;
   };
 } nodeType;
@@ -44,6 +50,8 @@ typedef struct nodeTypeTag{
 nodeType *opr (int oper, int nops, ...);
 // Function to create an id (variable) node of a given name.
 nodeType *id (char *name);
+// Function to create a function node of a given name.
+nodeType *func (char *name);
 // Function to creat a constant node.
 nodeType *con (void);
 // Function to creat a constant integer node of a given integer.

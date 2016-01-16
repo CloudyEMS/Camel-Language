@@ -43,10 +43,15 @@ Value ex(nodeType *p){
       return p->con.val; // Return its value.
     case typeId: { // If it was an id (variable).
       Value v;
-      v = getsym(p->id.name); // Get the value of the symbol in the symbol table.
+      v = getsym_id(p->id.name); // Get the value of the symbol in the symbol table.
       return v; // Return the value of hte symbol.
     }
+    case typeFunc: { // If it was a function.
+      // Value v;
 
+      // v = getsym_id(p->id.name); // Get the value of the symbol in the symbol table.
+      return ex(searchsym(p->func.name)->func_tree); // Return the value of hte symbol.
+    }
     case typeOpr: // If it was an operation.
     // Check for the type of operation.
     switch(p->opr.oper){
@@ -156,7 +161,7 @@ Value ex(nodeType *p){
         printf("> ");
         scanf("%d", &v.ival);
         // Change the value of the id (variable) to the newly read integer value.
-        symchange(p->opr.op[0]->id.name, v);
+        symchange_id(p->opr.op[0]->id.name, v);
         return empty_value();
       }
       case READ_REAL:{ // If it was a read real number (float) statement.
@@ -167,7 +172,7 @@ Value ex(nodeType *p){
         printf("> ");
         scanf("%f", &v.realval);
         // Change the value of the id (variable) to the newly read real number (float) value.
-        symchange(p->opr.op[0]->id.name, v);
+        symchange_id(p->opr.op[0]->id.name, v);
         return empty_value();
       }
       case READ_STR:{ // If it was a read string statement.
@@ -180,7 +185,7 @@ Value ex(nodeType *p){
         // Point at the string buffer.
         v.str = str_buf;
         // Change the value of the id (variable) to the newly read string value.
-        symchange(p->opr.op[0]->id.name, v);
+        symchange_id(p->opr.op[0]->id.name, v);
         return empty_value();
       }
       case ';': // If it was a semicolon.
@@ -189,7 +194,7 @@ Value ex(nodeType *p){
         return ex(p->opr.op[1]);
       case '=':{ // If it was an assignment statement.
         // Change the value of the variable to the right expression.
-        return symchange(p->opr.op[0]->id.name, ex(p->opr.op[1]));
+        return symchange_id(p->opr.op[0]->id.name, ex(p->opr.op[1]));
       }
       case UMINUS: { // If it was the unary minus (negative) operator.
         Value v = ex(p->opr.op[0]); // Get the value of the expression to be negated.

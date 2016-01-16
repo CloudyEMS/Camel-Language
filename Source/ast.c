@@ -56,6 +56,21 @@ nodeType *id (char *name) {
   return p;
 }
 
+// Create a variable node.
+nodeType *func (char *name) {
+  nodeType *p;
+  size_t nodeSize;
+
+  nodeSize = SIZEOF_NODETYPE + sizeof(funcNodeType);
+  if((p = malloc(nodeSize)) == NULL) {
+    yyerror ("out of memory!");
+  }
+
+  p->type = typeFunc;
+  p->func.name = name;
+  return p;
+}
+
 // Create an operation node.
 nodeType *opr (int oper, int nops, ...) {
   va_list ap; // List for multiple arguemnts.
